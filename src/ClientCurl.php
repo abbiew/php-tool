@@ -1,5 +1,5 @@
 <?php
-namespace BigBear\Tool\Curl;
+namespace BigBear\Tool;
 /**
  * CURL http客户端程序
  *
