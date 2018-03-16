@@ -1,6 +1,6 @@
 <?php
 
-namespace taobig\helpers;
+namespace BigBear\Tool;
 
 class StringEncodingHelper
 {
