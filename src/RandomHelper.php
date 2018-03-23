@@ -31,5 +31,24 @@ class RandomHelper
 
         return $str;
     }
+    /**
+     * @param array $arr arr元素需要有weight字段
+     */
+    public function getRandomByWeight(array $arr)
+    {
+        $weight = 0;
+        $tmp = [];
+        foreach ($arr as $v)
+        {
+            $weight += $v['weight'];
+            for($i=0; $i<$v['weight']; $i++){
+                $tmp[] = $v;
+            }
+        }
+        //获取随机数
+        $use = rand(0, $weight - 1);
+        $result = $tmp[$use];
+        return $result;
+    }
 
 }
