@@ -1,6 +1,6 @@
 {
 
-	"name" : "abbiew/php-tool",
+	"name" : "abbiew/phptool",
 	"description" : "A tool set for PHP projects",
 	"type" : "library",
 	"license" : "MIT",
@@ -17,10 +17,10 @@
 	},
 	"autoload" : {
 		"psr-4" : {
-			"taobig\\helpers\\" : "src/"
+			"abbiew\\phptool\\" : "src/"
 		}
 	},
-	"homepage" : "https://github.com/taobig/php-helper",
+	"homepage" : "https://github.com/abbiew/php-tool",
 	"support" : {
-		"issues" : "https://github.com/taobig/php-helper/issues"
+		"issues" : "https://github.com/abbiew/php-tool/issues"
 	}
