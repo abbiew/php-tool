@@ -308,7 +308,7 @@ class Encryption {
         return strlen($str);
     }
 	
-    public static function getSalt($length = 0){
+    public static function createSalt($length = 0){
         $length = intval($length);
         if ($length < 0){
             return false;
