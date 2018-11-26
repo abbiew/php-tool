@@ -9,7 +9,6 @@
 namespace App\Libraries;
 
 use App\RedisManager;
-use Monolog\Handler\IFTTTHandler;
 use Swoole\Client\CURL;
 use App\TradeInCar\Constant;
 
@@ -18,9 +17,9 @@ class WeChat
     public static $logPath = '/data/logs/chezhu/wechat/';
     //对应的appid和secret
     public static $miniProgramAppIdAndSecret = [
-        Constant::TRADE_IN_CAR_MINI_APPS => ['name'=>'tradeInCarMiniApps', 'appid'=>'wxe7b3d5d59632dfdb', 'secret'=>'4b09c0a7bf580c0d45358c7cd584444e'], //换车宝典
+        Constant::TRADE_IN_CAR_MINI_APPS => ['name'=>'tradeInCarMiniApps', 'appid'=>'', 'secret'=>''], //换车宝典
         Constant::TRADE_IN_CAR_APP => ['name'=>'tradeInCarApp', 'appid'=>'', 'secret'=>''], //换车宝典APP
-        Constant::TRADE_IN_CAR_OFFICIAL_ACCOUNTS => ['name'=>'tradeInCarOfficialAccounts', 'appid'=>'wxdcda4b7fcd4c0d7a', 'secret'=>'3e2212179f74057b53ecf2dc9f1efc3a'],    //换车宝典公众号
+        Constant::TRADE_IN_CAR_OFFICIAL_ACCOUNTS => ['name'=>'tradeInCarOfficialAccounts', 'appid'=>'', 'secret'=>''],    //换车宝典公众号
     ];
     //获取openid的url
     public static $miniProgramGetOpenidUrl = 'https://api.weixin.qq.com/sns/jscode2session?appid=%s&secret=%s&js_code=%s&grant_type=authorization_code';
