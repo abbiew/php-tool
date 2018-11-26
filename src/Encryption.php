@@ -12,6 +12,7 @@ class Encryption {
         'RS512' => array('openssl', 'SHA512'),
     );
     public static $leeway = 0;
+    const SALT_LENGTH = 20; //盐的长度，则数据库中需要设置长度为2*SALT_LENGTH
 
     //3DES加密
 	public static function encrypt3DES($input,$key){
@@ -305,5 +306,16 @@ class Encryption {
             return mb_strlen($str, '8bit');
         }
         return strlen($str);
+    }
+	
+    public static function getSalt($length = 0){
+        $length = intval($length);
+        if ($length < 0){
+            return false;
+        }
+        if (!$length){
+            $length = self::SALT_LENGTH;
+        }
+        return bin2hex(random_bytes($length));
     }
 }
