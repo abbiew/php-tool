@@ -1,5 +1,5 @@
 <?php
-namespace BigBear\Tool;
+namespace PolarBear\Tool;
 use \DateTime;
 class Encryption {
     public static $timestamp = null;
