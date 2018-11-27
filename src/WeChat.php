@@ -6,7 +6,7 @@
  * Date: 2018/7/19
  * Time: 10:21
  */
-namespace App\Libraries;
+namespace PolarBear\Tool;
 
 use App\RedisManager;
 use Swoole\Client\CURL;
