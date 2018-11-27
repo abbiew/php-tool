@@ -1,6 +1,6 @@
 <?php
 
-namespace BigBear\Tool;
+namespace PolarBear\Tool;
 
 //中国有34个省市自治区，其中23个省，4个直辖市，5个少数民族自治区，2个特别行政区。
 class ProvinceHelper
