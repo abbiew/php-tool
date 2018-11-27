@@ -1,5 +1,5 @@
 <?php
-namespace BigBear\Tool;
+namespace PolarBear\Tool;
 
 class Validate
 {
