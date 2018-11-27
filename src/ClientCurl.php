@@ -1,5 +1,5 @@
 <?php
-namespace BigBear\Tool;
+namespace PolarBear\Tool;
 /**
  * CURL http客户端程序
  *
