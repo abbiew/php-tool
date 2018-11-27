@@ -1,5 +1,5 @@
 <?php
-namespace BigBear\Tool;
+namespace PolarBear\Tool;
 
 //redis 分布式和单点式锁
 class RedLock
