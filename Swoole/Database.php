@@ -68,6 +68,7 @@ class Database
      * 协程版本
      */
 	const TYPE_COMYSQL = 4;
+	const TYPE_COHOOKMYSQL = 5;
 
     function __construct($db_config)
     {
@@ -81,6 +82,9 @@ class Database
                 break;
             case self::TYPE_COMYSQL:
                 $this->_db = new Coroutine\Component\MySQL($db_config);
+                break;
+            case self::TYPE_COHOOKMYSQL:
+                $this->_db = new Coroutine\Component\Hook\MySQL($db_config);
                 break;
             default:
                 $this->_db = new Database\PdoDB($db_config);
@@ -209,7 +213,7 @@ class Database
     {
         if (func_num_args() < 2)
         {
-            Error::info('SelectDB param error', 'Delete must have 2 paramers ($id,$table) !');
+            FwError::info('SelectDB param error', 'Delete must have 2 paramers ($id,$table) !');
         }
         $this->db_apt->init();
         $this->db_apt->from($table);
@@ -229,7 +233,7 @@ class Database
     {
         if (func_num_args() < 3)
         {
-            echo Error::info('SelectDB param error', 'Update must have 3 paramers ($id,$data,$table) !');
+            echo FwError::info('SelectDB param error', 'Update must have 3 paramers ($id,$data,$table) !');
             return false;
         }
         $this->db_apt->init();

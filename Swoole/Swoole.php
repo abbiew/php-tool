@@ -13,6 +13,7 @@ use Swoole\Exception\NotFound;
  * @author     Tianfeng.Han
  * @subpackage base
  * @property \Swoole\Database    $db
+ * @property \Swoole\Database    $dbal
  * @property \Swoole\IFace\Cache $cache
  * @property \Swoole\Upload      $upload
  * @property \Swoole\Component\Event       $event
@@ -27,6 +28,7 @@ use Swoole\Exception\NotFound;
  * @property \Swoole\URL         $url
  * @property \Swoole\Limit       $limit
  * @method \Swoole\Database      db
+ * @method \Swoole\Database      dbal
  * @method \MongoClient          mongo
  * @method \redis                redis
  * @method \Swoole\IFace\Cache   cache
@@ -71,6 +73,7 @@ class Swoole
 		'redis' => true,  //redis
         'mongo' => true,  //mongodb
     	'db' => true,  //数据库
+        'dbal' => true, // 数据库DBAL
         'codb' => true, //并发MySQLi客户端
     	'tpl' => true, //模板系统
     	'cache' => true, //缓存
@@ -91,6 +94,7 @@ class Swoole
     static $multi_instance = array(
         'cache' => true,
         'db' => true,
+        'dbal' => true,
         'mongo' => true,
         'redis' => true,
         'url' => true,
@@ -109,6 +113,8 @@ class Swoole
      * @var bool
      */
     static $enableCoroutine = false;
+    static $coroutineStreamHook = [];
+    static $coroutineStreamHookSupported = ['redis','db'];
     protected static $coroutineInit = false;
     const coroModuleDb = 1;
     const coroModuleRedis = 2;
@@ -180,7 +186,7 @@ class Swoole
         $this->env['sapi_name'] = php_sapi_name();
         if ($this->env['sapi_name'] != 'cli')
         {
-            Swoole\Error::$echo_html = true;
+            Swoole\FwError::$echo_html = true;
         }
 
         if (!empty($appDir))
@@ -199,7 +205,7 @@ class Swoole
 
         if (empty(self::$app_path))
         {
-            Swoole\Error::info("core error", __CLASS__ . ": Swoole::\$app_path and WEBPATH empty.");
+            Swoole\FwError::info("core error", __CLASS__ . ": Swoole::\$app_path and WEBPATH empty.");
         }
 
         //将此目录作为App命名空间的根目录
@@ -315,6 +321,34 @@ class Swoole
             $app->callHook(self::HOOK_AFTER_ACTION);
             $app->callHook(self::HOOK_CLEAN);
         });
+    }
+
+    static function coroInit()
+    {
+        self::getInstance()->callHook(self::HOOK_INIT);
+        self::getInstance()->callHook(self::HOOK_BEFORE_ACTION);
+    }
+
+    static function coroClean()
+    {
+        self::getInstance()->callHook(self::HOOK_AFTER_ACTION);
+        self::getInstance()->callHook(self::HOOK_CLEAN);
+    }
+
+    static function setCoroutineStreamHook($type = null)
+    {
+        if ($type)
+        {
+            if (!in_array($type, self::$coroutineStreamHookSupported))
+            {
+                throw new RuntimeException("stream hook type [$type] not support");
+            }
+            self::$coroutineStreamHook[$type] = $type;
+        }
+        foreach (self::$coroutineStreamHookSupported as $_type)
+        {
+            self::$coroutineStreamHook[$_type] = $_type;
+        }
     }
 
     /**
@@ -490,16 +524,23 @@ class Swoole
             {
                 $object = require $user_factory_file;
             }
-            //Swoole 2.0 协程模式
+            //Swoole协程模式
             elseif (self::$enableCoroutine)
             {
-                $system_factory_2x_file = LIBPATH . '/factory_2x/' . $module . '.php';
+                if (!empty(self::$coroutineStreamHook[$module]))
+                {
+                    $system_factory_file = LIBPATH . '/factory_hook/' . $module . '.php';
+                }
+                else
+                {
+                    $system_factory_file = LIBPATH . '/factory_2x/' . $module . '.php';
+                }
                 //不存在，继续使用 1.x 的工厂
-                if (!is_file($system_factory_2x_file))
+                if (!is_file($system_factory_file))
                 {
                     goto get_factory_file;
                 }
-                $object = require $system_factory_2x_file;
+                $object = require $system_factory_file;
             }
             //系统默认
             else
@@ -638,7 +679,7 @@ class Swoole
     {
         if (empty($this->hooks[self::HOOK_ROUTE]))
         {
-            echo Swoole\Error::info('MVC Error!',"UrlRouter hook is empty");
+            echo Swoole\FwError::info('MVC Error!',"UrlRouter hook is empty");
             return false;
         }
 
@@ -681,7 +722,7 @@ class Swoole
         }
         else
         {
-            \Swoole\Error::info("fatal error", "app_path[$dir] is not exists.");
+            \Swoole\FwError::info("fatal error", "app_path[$dir] is not exists.");
         }
     }
 
@@ -697,7 +738,7 @@ class Swoole
         }
         else
         {
-            \Swoole\Error::info("fatal error", "controller_path[$dir] is not exists.");
+            \Swoole\FwError::info("fatal error", "controller_path[$dir] is not exists.");
         }
     }
 
@@ -763,33 +804,33 @@ class Swoole
     /**
      * 加载所有模块
      */
-    function loadAllModules()
+    function loadAllModules($type = null)
     {
-        //redis
-        $redis_conf = $this->config['redis'];
-        if (!empty($redis_conf))
+        $support = ['db','redis','cache'];
+        if (!empty($type) and in_array($type,$support))
         {
-            foreach ($redis_conf as $k => $v)
+            $conf = $this->config[$type];
+            if (!empty($conf))
             {
-                $this->loadModule('redis', $k);
+                foreach ($conf as $k => $v)
+                {
+                    $this->loadModule($type, $k);
+                }
             }
         }
-        //cache
-        $cache_conf = $this->config['cache'];
-        if (!empty($cache_conf))
+        else
         {
-            foreach ($cache_conf as $k => $v)
+
+            foreach ($support as $_type)
             {
-                $this->loadModule('cache', $k);
-            }
-        }
-        //db
-        $db_conf = $this->config['db'];
-        if (!empty($db_conf))
-        {
-            foreach ($db_conf as $k => $v)
-            {
-                $this->loadModule('db', $k);
+                $conf = $this->config[$_type];
+                if (!empty($conf))
+                {
+                    foreach ($conf as $k => $v)
+                    {
+                        $this->loadModule($_type, $k);
+                    }
+                }
             }
         }
     }
@@ -851,6 +892,10 @@ class Swoole
         else
         {
             $controller_dir = self::$app_path . '/controllers';
+            if (!is_dir($controller_dir))
+            {
+                $controller_dir = self::$app_path . '/Controllers';
+            }
         }
         //子目录
         if (isset($mvc['directory']))

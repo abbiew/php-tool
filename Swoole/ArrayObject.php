@@ -4,7 +4,6 @@ namespace Swoole;
 class ArrayObject implements \ArrayAccess, \Serializable, \Countable, \Iterator
 {
     protected $array;
-    protected $index = 0;
 
     function __construct($array = array())
     {
@@ -23,18 +22,16 @@ class ArrayObject implements \ArrayAccess, \Serializable, \Countable, \Iterator
 
     function valid()
     {
-        return count($this->array) >= $this->index;
+        return array_key_exists($this->key(), $this->array);
     }
 
     function rewind()
     {
-        $this->index = 0;
         return reset($this->array);
     }
 
     function next()
     {
-        $this->index++;
         return next($this->array);
     }
 
@@ -123,6 +120,10 @@ class ArrayObject implements \ArrayAccess, \Serializable, \Countable, \Iterator
 
     function offsetGet($k)
     {
+        if (!array_key_exists($k, $this->array))
+        {
+            return null;
+        }
         return $this->array[$k];
     }
 
@@ -407,6 +408,7 @@ class ArrayObject implements \ArrayAccess, \Serializable, \Countable, \Iterator
     /**
      * 过滤数组中的元素
      * @param $fn callable
+     * @param int $flag
      * @return ArrayObject
      */
     function filter(callable $fn, $flag = 0)
@@ -414,6 +416,10 @@ class ArrayObject implements \ArrayAccess, \Serializable, \Countable, \Iterator
         return new ArrayObject(array_filter($this->array, $fn, $flag));
     }
 
+    /**
+     * @param $value
+     * @return ArrayObject|StringObject
+     */
     static function detectType($value)
     {
         if (is_array($value))

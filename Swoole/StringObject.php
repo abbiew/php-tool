@@ -50,6 +50,11 @@ class StringObject
         return new StringObject(strtoupper($this->string));
     }
 
+    function trim()
+    {
+        return new StringObject(trim($this->string));
+    }
+
     function len()
     {
         return strlen($this->string);
@@ -126,5 +131,13 @@ class StringObject
     function toArray($splitLength = 1)
     {
         return new ArrayObject(str_split($this->string, $splitLength));
+    }
+
+    /**
+     * @return mixed
+     */
+    function toSring()
+    {
+        return $this->__toString();
     }
 }

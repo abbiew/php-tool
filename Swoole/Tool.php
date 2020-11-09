@@ -523,6 +523,11 @@ class Tool
         file_put_contents($file, $log, FILE_APPEND);
     }
 
+    /**
+     * @param $n
+     * @param int $round
+     * @return string
+     */
     static function getHumanSize($n, $round = 3)
     {
         if ($n > 1024 * 1024 * 1024)
@@ -543,6 +548,43 @@ class Tool
         }
     }
 
+    /**
+     * 将秒数转为人性化格式
+     * @param $n
+     * @param int $round
+     * @return string
+     */
+    static function getHumanTime($n, $round = 3)
+    {
+        if ($n > 86400 * 365)
+        {
+            return round($n / ( 86400 * 365), $round) . "年";
+        }
+        elseif ($n > 86400 * 30)
+        {
+            return round($n / (86400 * 30), $round) . "月";
+        }
+        elseif ($n > 86400)
+        {
+            return round($n / (86400), $round) . "天";
+        }
+        elseif ($n > 3600)
+        {
+            return round($n / (3600), $round) . "小时";
+        }
+        elseif ($n > 60)
+        {
+            return round($n / (60), $round) . "分钟";
+        }
+        else
+        {
+            return $n."秒";
+        }
+    }
+
+    /**
+     * @param $func
+     */
     static function showCost($func)
     {
         $_t = microtime(true);
@@ -638,11 +680,81 @@ class Tool
     }
 
     /**
+     * @param $array
+     * @return \stdClass
+     */
+    static function array2object($array)
+    {
+        $object = new \stdClass();
+        foreach ($array as $key => $value)
+        {
+            $object->$key = $value;
+        }
+        return $object;
+    }
+
+    /**
+     * @param $object
+     * @return array
+     */
+    static function object2array($object)
+    {
+        $array = [];
+        foreach ($object as $key => $value)
+        {
+            $array[$key] = $value;
+        }
+        return $array;
+    }
+
+    /**
      * 获取现在的时间字符串，格式为 2016-12-12 00:00:01
+     * @param null $tm
      * @return bool|string
      */
-    static function now()
+    static function now($tm = null)
     {
-        return date(self::DATE_FORMAT_HUMEN);
+        return date(self::DATE_FORMAT_HUMEN, $tm);
+    }
+
+    /**
+     * 检查地址是否未私有
+     * @param string $ip
+     * @return bool
+     */
+    static function isPrivateIP(string $ip)
+    {
+        if (strncmp($ip, "10.", 3) == 0 or strncmp($ip, "192.168.", 8) == 0)
+        {
+            return true;
+        }
+        if (strncmp($ip, "172.", 4) == 0)
+        {
+            $arr = explode('.', $ip);
+            if ($arr[1] >= 16 and $arr[1] <= 31)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * @param $data
+     * @return string
+     */
+    static function packJson($data)
+    {
+        $json = json_encode($data);
+        return pack('N', _string($json)->len()) . $json;
+    }
+
+    /**
+     * @param $str
+     * @return mixed
+     */
+    static function unpackJson($str)
+    {
+        return json_decode(substr($str, 4), true);
     }
 }

@@ -28,6 +28,7 @@ class Model
 
 	public $table = "";
 	protected $_table_before_shard;
+    protected $db_key;
 
 	/**
 	 * 表切片参数
@@ -49,6 +50,7 @@ class Model
      */
     function __construct(\Swoole $swoole, $db_key = 'master')
     {
+        $this->db_key = $db_key;
         $this->db = $swoole->db($db_key);
         $this->dbs = new SelectDB($this->db);
         $this->swoole = $swoole;
@@ -118,7 +120,7 @@ class Model
 
 	/**
 	 * 插入一条新的记录到表
-	 * @param $data Array 必须是键值（表的字段对应值）对应
+	 * @param $data array 必须是键值（表的字段对应值）对应
 	 * @return int
 	 */
     public function put($data)
@@ -391,6 +393,22 @@ class Model
         }
 	}
 
+    /**
+     * 检测表是否存在
+     */
+    function existsTable()
+    {
+        $data = $this->db->query("show tables like '{$this->table}'")->fetch();
+        if (empty($data))
+        {
+            return false;
+        }
+        else
+        {
+            return true;
+        }
+    }
+
 	/**
 	 * 获取表的字段描述
 	 * @return array
@@ -473,5 +491,15 @@ class Model
     function select($fields = '*')
     {
         return new QueryBuilder($this->db, $this->table, $fields);
+    }
+
+    function __get($name)
+    {
+        if ($name === 'dbal')
+        {
+            return $this->swoole->dbal($this->db_key);
+        }
+
+        return null;
     }
 }

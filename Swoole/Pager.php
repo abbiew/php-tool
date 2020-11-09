@@ -50,7 +50,7 @@ class Pager
         {
             if (!isset($array['total']))
             {
-                Error::info(__FUNCTION__, 'need a param of total');
+                FwError::info(__FUNCTION__, 'need a param of total');
             }
             $total = intval($array['total']);
             /**
@@ -107,7 +107,7 @@ class Pager
         }
         else
         {
-            Error::info(__FUNCTION__, $var . " does not belong to PB_Page!");
+            FwError::info(__FUNCTION__, $var . " does not belong to PB_Page!");
         }
     }
 

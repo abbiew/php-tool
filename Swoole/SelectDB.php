@@ -571,6 +571,7 @@ class SelectDB
         {
             $this->sql = $sql;
         }
+
         $this->result = $this->db->query($this->sql);
         $this->is_execute++;
     }
@@ -613,7 +614,7 @@ class SelectDB
     {
         if(isset($params['put']))
         {
-            Error::info('SelectDB Error!','Params put() cannot call put()!');
+            FwError::info('SelectDB Error!','Params put() cannot call put()!');
         }
         //处理where条件
         if (isset($params['where']))
@@ -716,7 +717,7 @@ class SelectDB
             }
             else
             {
-                Error::info('Error: SelectDB 错误的参数', "<pre>参数$method=$param</pre>");
+                FwError::info('Error: SelectDB 错误的参数', "<pre>参数$method=$param</pre>");
             }
         }
         return true;

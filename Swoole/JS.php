@@ -39,7 +39,7 @@ class JS
         $out .= self::$head;
         $out .= $js;
         $out .= self::$foot;
-        if (!Error::$stop or $return)
+        if (!FwError::$stop or $return)
         {
             return $out;
         }

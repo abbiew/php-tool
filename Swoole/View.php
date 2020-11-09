@@ -307,7 +307,7 @@ class View extends \ArrayObject
         $templateFile = $this->template_dir . $templateFile;
         if (!file_exists($templateFile))
         {
-            Error::info('View Error!', 'Template file not exists! <b>' . $templateFile . '</b>');
+            FwError::info('View Error!', 'Template file not exists! <b>' . $templateFile . '</b>');
         }
 
         return $templateFile;

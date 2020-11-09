@@ -22,7 +22,7 @@ class ModelLoader
      * 仅获取master
      * @param $model_name
      * @return mixed
-     * @throws Error
+     * @throws FwError
      */
     function __get($model_name)
     {
@@ -34,7 +34,7 @@ class ModelLoader
      * @param $model_name
      * @param $params
      * @return mixed
-     * @throws Error
+     * @throws FwError
      */
     function __call($model_name, $params)
     {
@@ -47,7 +47,7 @@ class ModelLoader
      * @param $model_name
      * @param $db_key
      * @return mixed
-     * @throws Error
+     * @throws FwError
      */
     public function loadModel($model_name, $db_key = 'master')
     {
@@ -58,11 +58,18 @@ class ModelLoader
         else
         {
             $model_file = \Swoole::$app_path . '/models/' . str_replace('\\', '/', $model_name) . '.php';
+            $model_class = '\\App\\Model\\' . $model_name;
             if (!is_file($model_file))
             {
-                throw new Error("The model [<b>$model_name</b>] does not exist.");
+                //严格的psr4格式 大驼峰 命名空间和文件夹对应
+                $model_file = \Swoole::$app_path . '/Models/' . str_replace('\\', '/', $model_name) . '.php';
+                $model_class = '\\App\\Models\\' . $model_name;
             }
-            $model_class = '\\App\\Model\\' . $model_name;
+            if (!is_file($model_file))
+            {
+                throw new FwError("The model [<b>$model_name</b>] does not exist.");
+            }
+           
             require_once $model_file;
             $this->_models[$db_key][$model_name] = new $model_class($this->swoole, $db_key);
             return $this->_models[$db_key][$model_name];

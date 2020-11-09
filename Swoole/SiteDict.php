@@ -24,13 +24,13 @@ class SiteDict
 	 */
 	static function get($dictname)
 	{
-		if(!\Swoole::$php->cache) Error::info('SiteDict Cache Error','Please load Cache!');
+		if(!\Swoole::$php->cache) FwError::info('SiteDict Cache Error','Please load Cache!');
 		$cache_key = 'sitedict_'.$dictname;
 		$$dictname = \Swoole::$php->cache->get($cache_key);
 		if(empty($$dictname))
 		{
 			$data_file = self::$data_dir.'/'.$dictname.'.php';
-			if(!file_exists($data_file)) Error::info('SiteDict dict file not found!',"File <b>$data_file</b> not found!");
+			if(!file_exists($data_file)) FwError::info('SiteDict dict file not found!',"File <b>$data_file</b> not found!");
 			require($data_file);
 			\Swoole::$php->cache->set($cache_key,$$dictname,self::$cache_life);
 		}
@@ -42,7 +42,7 @@ class SiteDict
 	 */
 	static function set($dictname,$dict)
 	{
-		if(!\Swoole::$php->cache) Error::info('SiteDict Cache Error','Please load Cache!');
+		if(!\Swoole::$php->cache) FwError::info('SiteDict Cache Error','Please load Cache!');
 		$filename = self::$data_dir.'/'.$dictname.'.php';
 		self::write($dictname,$dict,$filename);
 		self::delete($dictname);

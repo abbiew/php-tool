@@ -129,7 +129,7 @@ class Controller extends BaseObject
         }
         if (!is_file($this->template_dir . $_swoole_tpl_file))
         {
-            Error::info('template error', "template file[" . $this->template_dir . $_swoole_tpl_file . "] not found");
+            FwError::info('template error', "template file[" . $this->template_dir . $_swoole_tpl_file . "] not found");
         }
         extract($this->tpl_var);
         include $this->template_dir . $_swoole_tpl_file;
@@ -308,10 +308,6 @@ HTMLS;
             if ($conds->contains('date') and Validate::check('date', $data[$k]) === false)
             {
                 goto type_incorrectly;
-            }
-            if ($conds->contains('date'))
-            {
-                var_dump(Validate::check('date', $data[$k]), $data[$k]);
             }
             //时间
             if ($conds->contains('time') and Validate::check('time', $data[$k]) === false)

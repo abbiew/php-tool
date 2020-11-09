@@ -95,7 +95,7 @@ class GeneralView
         }
         else
         {
-            Error::info('GeneralView Error!', "View <b>{$this->app_name}->{$method}</b> Not Found!");
+            FwError::info('GeneralView Error!', "View <b>{$this->app_name}->{$method}</b> Not Found!");
         }
     }
 

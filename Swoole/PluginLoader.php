@@ -49,7 +49,7 @@ class PluginLoader
 			require_once($path);
 			$this->plugins[$plugin_name] = $swoole_plugin;
 		}
-		else Error::info('Plugin not Found!',"Plugin file <b>$path</b> not exists!");
+		else FwError::info('Plugin not Found!',"Plugin file <b>$path</b> not exists!");
 	}
 	/**
 	 * 必须包含某个插件

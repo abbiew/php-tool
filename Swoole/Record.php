@@ -132,7 +132,7 @@ class Record extends Observer implements \ArrayAccess
         }
         else
         {
-            Error::pecho("Record object no property: $property");
+            FwError::pecho("Record object no property: $property");
             return null;
         }
     }
